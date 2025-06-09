@@ -1,0 +1,408 @@
+---
+title: "Regresión Normal Heteroscedástica"
+format: html
+---
+
+## Modelo de regresión lineal
+
+Sean $Y_1, Y_2, \dots, Y_n$ variables aleatorias independientes tales que para cada $i = 1, \dots, n$,
+$$
+Y_i = \mu_i + \varepsilon_i,
+$$
+donde
+$$
+\varepsilon_i \sim \mathcal{N}(0, \sigma_i^2),
+$$
+independientes entre sí.
+
+Además,
+$$
+\mu_i = \mathbf{x}_i^\top \boldsymbol{\beta}, \quad \ln \sigma_i^2 = \mathbf{z}_i^\top \boldsymbol{\gamma},
+$$
+donde $\mathbf{x}_i$ y $\mathbf{z}_i$ son vectores de covariables correspondientes al individuo $i$, asociados a la media y a la varianza respectivamente, y 
+$$
+\boldsymbol{\beta} \in \mathbb{R}^p, \quad \boldsymbol{\gamma} \in \mathbb{R}^q
+$$
+son vectores columna de parámetros.
+
+El uso del logaritmo en la varianza asegura que $\sigma_i^2 > 0$ para todo $i$.
+
+Los parámetros $\boldsymbol{\beta}$ representan el efecto de los predictores sobre la media condicional de $Y_i$ dado $\mathbf{x}_i$, mientras que $\boldsymbol{\gamma}$ representan el efecto de los predictores sobre el logaritmo de la varianza condicional de $Y_i$ dado $\mathbf{z}_i$.
+
+Si $\boldsymbol{\gamma} = \mathbf{0}$, el modelo se reduce al modelo clásico de regresión lineal homocedástico.
+
+## Estimación
+
+Sea $\boldsymbol{\theta} = (\boldsymbol{\beta}, \boldsymbol{\gamma})$ el vector de parámetros.
+
+La función de densidad para una observación $y_i$ es:
+$$
+f_{\boldsymbol{\theta}}(y_i) = \frac{1}{\sqrt{2 \pi \sigma_i^2}} \exp\left( -\frac{(y_i - \mathbf{x}_i^\top \boldsymbol{\beta})^2}{2 \sigma_i^2} \right),
+$$
+donde $\sigma_i^2 = \exp(\mathbf{z}_i^\top \boldsymbol{\gamma})$.
+
+Por el supuesto de independencia, la función de verosimilitud para la muestra completa es:
+$$
+L(\boldsymbol{\beta}, \boldsymbol{\gamma}) = \prod_{i=1}^n f_{\boldsymbol{\theta}}(y_i) = \prod_{i=1}^n \frac{1}{\sqrt{2 \pi \sigma_i^2}} \exp\left( -\frac{(y_i - \mathbf{x}_i^\top \boldsymbol{\beta})^2}{2 \sigma_i^2} \right).
+$$
+
+La log-verosimilitud es:
+\begin{align*}
+\ell(\boldsymbol{\beta}, \boldsymbol{\gamma}) &= \log L(\boldsymbol{\beta}, \boldsymbol{\gamma}) \\
+&= -\frac{n}{2} \log(2\pi) - \frac{1}{2} \sum_{i=1}^n \log \sigma_i^2 - \frac{1}{2} \sum_{i=1}^n \frac{(y_i - \mathbf{x}_i^\top \boldsymbol{\beta})^2}{\sigma_i^2} \\
+&= -\frac{n}{2} \log(2\pi) - \frac{1}{2} \sum_{i=1}^n \mathbf{z}_i^\top \boldsymbol{\gamma} - \frac{1}{2} \sum_{i=1}^n \frac{(y_i - \mathbf{x}_i^\top \boldsymbol{\beta})^2}{\exp(\mathbf{z}_i^\top \boldsymbol{\gamma})} \\
+\\
+\ell(\boldsymbol{\beta}, \boldsymbol{\gamma}) &= -\frac{n}{2} \log(2\pi) - \frac{1}{2} \sum_{i=1}^n \log \sigma_i^2 - \frac{1}{2} \sum_{i=1}^n \frac{(y_i - \mu_i)^2}{\sigma_i^2} \\
+\\
+\ell(\boldsymbol{\beta}, \boldsymbol{\gamma}) &\propto - \frac{1}{2} \sum_{i=1}^n \left[ \log \sigma_i^2 + \frac{(y_i - \mu_i)^2}{\sigma_i^2} \right].
+\end{align*}
+
+Las derivadas parciales de la log-verosimilitud son:
+
+\begin{align*}
+\frac{\partial \ell}{\partial \boldsymbol{\beta}} &= \sum_{i=1}^n \frac{y_i - \mu_i}{\sigma_i^2} \mathbf{x}_i, \\[8pt]
+\frac{\partial \ell}{\partial \boldsymbol{\gamma}} &= -\frac{1}{2} \sum_{i=1}^n \mathbf{z}_i \left( 1 - \frac{(y_i - \mu_i)^2}{\sigma_i^2} \right), \\[8pt]
+\frac{\partial^2 \ell}{\partial \boldsymbol{\beta} \partial \boldsymbol{\beta}^\top} &= - \sum_{i=1}^n \frac{1}{\sigma_i^2} \mathbf{x}_i \mathbf{x}_i^\top, \\[8pt]
+\frac{\partial^2 \ell}{\partial \boldsymbol{\gamma} \partial \boldsymbol{\gamma}^\top} &= -\frac{1}{2} \sum_{i=1}^n \mathbf{z}_i \mathbf{z}_i^\top \frac{(y_i - \mu_i)^2}{\sigma_i^2}, \\[8pt]
+\frac{\partial^2 \ell}{\partial \boldsymbol{\beta} \partial \boldsymbol{\gamma}^\top} &= - \sum_{i=1}^n \frac{(y_i - \mu_i)}{\sigma_i^2} \mathbf{x}_i \mathbf{z}_i^\top.
+\end{align*}
+
+Para construir la matriz de Información de Fisher, tomamos valos esperado de las derivadas parciales de la logverosimilitud
+
+\begin{align*}
+\mathbb{E} \left[ \frac{\partial^2 \ell}{\partial \boldsymbol{\beta} \partial \boldsymbol{\beta}^\top} \right]
+&= - \sum_{i=1}^n \frac{1}{\sigma_i^2} \mathbf{x}_i \mathbf{x}_i^\top, \\[10pt]
+\mathbb{E} \left[ \frac{\partial^2 \ell}{\partial \boldsymbol{\gamma} \partial \boldsymbol{\gamma}^\top} \right]
+&= - \frac{1}{2} \sum_{i=1}^n \mathbf{z}_i \mathbf{z}_i^\top, \\[10pt]
+\mathbb{E} \left[ \frac{\partial^2 \ell}{\partial \boldsymbol{\beta} \partial \boldsymbol{\gamma}^\top} \right]
+&= - \sum_{i=1}^n \mathbb{E} \left[ \frac{y_i - \mu_i}{\sigma_i^2} \right] \mathbf{x}_i \mathbf{z}_i^\top = \mathbf{0}.
+\end{align*}
+
+\begin{align*}
+\mathcal{I}(\boldsymbol{\theta}) 
+&= 
+- \mathbb{E} 
+\begin{bmatrix}
+\displaystyle \frac{\partial^2 \ell}{\partial \boldsymbol{\beta} \partial \boldsymbol{\beta}^\top} & \displaystyle \frac{\partial^2 \ell}{\partial \boldsymbol{\beta} \partial \boldsymbol{\gamma}^\top} \\[10pt]
+\displaystyle \frac{\partial^2 \ell}{\partial \boldsymbol{\gamma} \partial \boldsymbol{\beta}^\top} & \displaystyle \frac{\partial^2 \ell}{\partial \boldsymbol{\gamma} \partial \boldsymbol{\gamma}^\top}
+\end{bmatrix} \\[12pt]
+&= 
+\begin{bmatrix}
+\displaystyle \sum_{i=1}^n \frac{1}{\sigma_i^2} \mathbf{x}_i \mathbf{x}_i^\top & \mathbf{0} \\[10pt]
+\mathbf{0} & \displaystyle \frac{1}{2} \sum_{i=1}^n \mathbf{z}_i \mathbf{z}_i^\top
+\end{bmatrix} \\[12pt]
+&= 
+\begin{bmatrix}
+\mathbf{X}^\top \, \mathrm{diag}\left(\frac{1}{\sigma_1^2}, \dots, \frac{1}{\sigma_n^2} \right) \, \mathbf{X} & \mathbf{0} \\[10pt]
+\mathbf{0} & \mathbf{Z}^\top \, \mathrm{diag}\left(\frac{1}{2}, \dots, \frac{1}{2} \right) \, \mathbf{Z}
+\end{bmatrix} \\[12pt]
+&= 
+\begin{bmatrix}
+\mathcal{I}_\beta & \mathbf{0} \\[8pt]
+\mathbf{0} & \mathcal{I}_\gamma
+\end{bmatrix}
+\end{align*}
+
+## Algoritmo de Fisher Scoring
+
+Ecuación principal del algoritmo Fisher Scoring
+$$
+I^{(k)}(\boldsymbol{\theta}) \, \boldsymbol{\theta}^{(k+1)} 
+= I^{(k)}(\boldsymbol{\theta}) \, \boldsymbol{\theta}^{(k)} + q^{(k)},
+$$
+donde
+$$
+\boldsymbol{\theta} = \begin{pmatrix} \boldsymbol{\beta} \\ \boldsymbol{\gamma} \end{pmatrix}, \quad
+I^{(k)}(\boldsymbol{\theta}) = \begin{pmatrix}
+I^{(k)}_{\boldsymbol{\beta}} & \mathbf{0} \\
+\mathbf{0} & I^{(k)}_{\boldsymbol{\gamma}}
+\end{pmatrix}, \quad
+q^{(k)} = \begin{pmatrix} q^{(k)}_{\boldsymbol{\beta}} \\ q^{(k)}_{\boldsymbol{\gamma}} \end{pmatrix}.
+$$
+
+Separando en bloques:
+
+$$
+I^{(k)}_{\boldsymbol{\beta}} \boldsymbol{\beta}^{(k+1)} = I^{(k)}_{\boldsymbol{\beta}} \boldsymbol{\beta}^{(k)} + q^{(k)}_{\boldsymbol{\beta}},
+$$
+$$
+I^{(k)}_{\boldsymbol{\gamma}} \boldsymbol{\gamma}^{(k+1)} = I^{(k)}_{\boldsymbol{\gamma}} \boldsymbol{\gamma}^{(k)} + q^{(k)}_{\boldsymbol{\gamma}}.
+$$
+
+Multiplicando por las inversas:
+
+$$
+\boldsymbol{\beta}^{(k+1)} = \boldsymbol{\beta}^{(k)} + \left( I^{(k)}_{\boldsymbol{\beta}} \right)^{-1} q^{(k)}_{\boldsymbol{\beta}},
+$$
+$$
+\boldsymbol{\gamma}^{(k+1)} = \boldsymbol{\gamma}^{(k)} + \left( I^{(k)}_{\boldsymbol{\gamma}} \right)^{-1} q^{(k)}_{\boldsymbol{\gamma}}.
+$$
+
+\begin{enumerate}
+  \item \textbf{Inicializar:}
+  \begin{itemize}
+    \item Escoge un valor inicial \(\boldsymbol{\gamma}^{(0)}\)
+    \item Calcula las varianzas: \(\sigma_i^{2(0)} = \exp(\mathbf{z}_i^\top \boldsymbol{\gamma}^{(0)})\)
+    \item Define la matriz de pesos: \(\mathbf{W}_{\mu}^{(0)} = \mathrm{diag}\left( \frac{1}{\sigma_i^{2(0)}} \right)\)
+  \end{itemize}
+
+  \item \textbf{Actualizar \(\boldsymbol{\beta}\):}
+  \[
+  \boldsymbol{\beta}^{(k+1)} = \left( \mathbf{X}^\top \mathbf{W}_{\mu}^{(k)} \mathbf{X} \right)^{-1} \mathbf{X}^\top \mathbf{W}_{\mu}^{(k)} \mathbf{y}
+  \]
+
+  \item \textbf{Construir pseudorespuesta para \(\boldsymbol{\gamma}\):}
+  \[
+  \widetilde{z}_i^{(k)} = \log\left( (y_i - \mathbf{x}_i^\top \boldsymbol{\beta}^{(k+1)})^2 \right)
+  \]
+
+  \item \textbf{Actualizar \(\boldsymbol{\gamma}\):} (usando pesos constantes \(\frac{1}{2}\))
+  \[
+  \boldsymbol{\gamma}^{(k+1)} = \left( \mathbf{Z}^\top \mathbf{W}_\sigma \mathbf{Z} \right)^{-1} \mathbf{Z}^\top \mathbf{W}_\sigma \widetilde{\mathbf{z}}^{(k)}, \quad \text{con } \mathbf{W}_\sigma = \frac{1}{2} \mathbf{I}_n
+  \]
+
+  \item \textbf{Actualizar varianzas y pesos:}
+  \[
+  \sigma_i^{2(k+1)} = \exp(\mathbf{z}_i^\top \boldsymbol{\gamma}^{(k+1)}), \quad
+  \mathbf{W}_{\mu}^{(k+1)} = \mathrm{diag}\left( \frac{1}{\sigma_i^{2(k+1)}} \right)
+  \]
+
+  \item \textbf{Repetir pasos 2 a 5 hasta convergencia.}
+\end{enumerate}
+
+
+1. **Inicialización**  
+   - Escoge un valor inicial $\boldsymbol{\gamma}^{(0)}$.  
+   - Calcula las varianzas iniciales:  
+   $$
+   \sigma_i^{2(0)} = \exp(\mathbf{z}_i^\top \boldsymbol{\gamma}^{(0)}), \quad i=1,\dots,n
+   $$
+   - Define la matriz de pesos inicial para la media:  
+   $$
+   \mathbf{W}^{(0)} = \mathrm{diag}\left( \frac{1}{\sigma_i^{2(0)}} \right)
+   $$
+
+2. **Pasos iterativos** (para $k=0,1,2,\dots$)  
+
+   a) Actualiza $\boldsymbol{\beta}^{(k+1)}$:  
+   $$
+   \boldsymbol{\beta}^{(k+1)} = \left( \mathbf{X}^\top \mathbf{W}^{(k)} \mathbf{X} \right)^{-1} \mathbf{X}^\top \mathbf{W}^{(k)} \mathbf{y}
+   $$
+   donde 
+   $$
+   \mathbf{W}^{(k)} = \mathrm{diag}\left( \frac{1}{\sigma_i^{2(k)}} \right), \quad \sigma_i^{2(k)} = \exp(\mathbf{z}_i^\top \boldsymbol{\gamma}^{(k)}).
+   $$
+
+   b) Construye la respuesta de trabajo $\widetilde{y}_i^{(k)}$:  
+   $$
+   \widetilde{y}_i^{(k)} = \eta_i^{(k)} + \frac{1}{\sigma_i^{2(k)}} \left(y_i - \mathbf{x}_i^\top \boldsymbol{\beta}^{(k+1)}\right)^2 - 1, \quad \text{donde } \eta_i^{(k)} = \mathbf{z}_i^\top \boldsymbol{\gamma}^{(k)}.
+   $$
+
+   c) Actualiza $\boldsymbol{\gamma}^{(k+1)}$:  
+   $$
+   \boldsymbol{\gamma}^{(k+1)} = \left( \mathbf{Z}^\top \mathbf{W}_\sigma \mathbf{Z} \right)^{-1} \mathbf{Z}^\top \mathbf{W}_\sigma \widetilde{\mathbf{y}}^{(k)}, \quad \text{con } \mathbf{W}_\sigma = \frac{1}{2} \mathbf{I}_n.
+   $$
+
+   d) Actualiza las varianzas y la matriz de pesos para la siguiente iteración:  
+   $$
+   \sigma_i^{2(k+1)} = \exp(\mathbf{z}_i^\top \boldsymbol{\gamma}^{(k+1)}), \quad
+   \mathbf{W}^{(k+1)} = \mathrm{diag}\left( \frac{1}{\sigma_i^{2(k+1)}} \right).
+   $$
+
+3. **Repetir** los pasos 2a) a 2d) hasta que se cumpla el criterio de convergencia
+
+$$
+\|\boldsymbol{\theta}^{(k+1)} - \boldsymbol{\theta}^{(k)}\|_2 < \varepsilon,
+$$
+
+donde $\boldsymbol{\theta} = (\boldsymbol{\beta}^\top, \boldsymbol{\gamma}^\top)^\top$ y $\varepsilon > 0$ es un umbral pequeño.
+
+## Implementación del algoritmo de Fisher Scoring
+
+```{r}
+# Algoritmo de Fisher Scoring para Modelo Normal con Heteroscedasticidad
+
+# y: vector de variable respuesta (tamaño n)
+# X: matriz de covariables para la media (n x p)
+# Z: matriz de covariables para la varianza (n x q)
+# beta inicial: valor inicial para beta
+# gamma inicial: valor inicial para beta
+# tolerancia: valor epsilon para determinar la convergencia 1e-6
+# max_iteraciones: número máximo de iteraciones del algoritmo
+# progreso: mostrar iteraciones
+
+fisher_scoring <- function(y, X, Z, 
+                          beta_inicial = NULL, 
+                          gamma_inicial = NULL, 
+                          tolerancia = 1e-6, 
+                          max_iteraciones = 100) {
+  
+  n <- length(y)        # número de observaciones
+  p <- ncol(X)          # número de parámetros beta
+  q <- ncol(Z)          # número de parámetros gamma
+  
+  # PASO 1: INICIALIZACIÓN
+
+  # Valores iniciales
+  if (is.null(beta_inicial)) {
+    beta <- rep(0, p) # vector de ceros si no de proporcionan valores iniciales
+  } else {
+    beta <- beta_inicial
+  }
+  
+  if (is.null(gamma_inicial)) {
+    gamma <- rep(0, q)
+  } else {
+    gamma <- gamma_inicial
+  }
+  
+  # Calcular varianzas iniciales: sigma_i^2 = exp(Z_i' * gamma)
+  eta <- as.vector(Z %*% gamma)
+  sigma2 <- exp(eta)
+  
+  # Matriz de pesos inicial: W = diagonal(1/sigma_i^2)
+  W <- diag(1 / sigma2)
+  
+  # iteramos
+  iteracion <- 0
+  convergio <- FALSE
+  
+  # PASO 2: BUCLE PRINCIPAL DE ITERACIONES
+
+  while (iteracion < max_iteraciones && !convergio) {
+    
+    iteracion <- iteracion + 1
+    
+    # Guardar valores anteriores para verificar convergencia
+    beta_anterior <- beta
+    gamma_anterior <- gamma
+    
+    # a) ACTUALIZAR BETA
+    # beta_nuevo = (X' * W * X)^(-1) * X' * W * y
+    
+    cov_beta <- solve(t(X) %*% W %*% X)
+    XtWy <- t(X) %*% W %*% y
+    beta <- cov_beta %*% XtWy
+    
+    # b) CONSTRUIR RESPUESTA DE TRABAJO Y_TILDE
+    # y_tilde_i = eta_i + (1/sigma_i^2) * (y - X*beta)^2 - 1
+    
+    eta <- as.vector(Z %*% gamma)
+    residuos <- y - X %*% beta
+    y_tilde <- eta + (residuos^2) / sigma2 - 1
+    
+    # c) ACTUALIZAR GAMMA
+    # W_sigma = (1/2) * Identidad
+    W_sigma <- diag(rep(0.5, n))
+    
+    # gamma_nuevo = (Z' * W_sigma * Z)^(-1) * Z' * W_sigma * y_tilde
+    cov_gamma <- solve(t(Z) %*% W_sigma %*% Z)
+    ZtWy_tilde <- t(Z) %*% W_sigma %*% y_tilde
+    gamma <- cov_gamma %*% ZtWy_tilde
+    
+    # d) ACTUALIZAR VARIANZAS Y PESOS PARA LA SIGUIENTE ITERACIÓN
+
+    eta <- as.vector(Z %*% gamma)
+    sigma2 <- exp(eta)
+    W <- diag(1 / sigma2)
+    
+    # VERIFICAR CONVERGENCIA
+    # Criterio: ||parametros_nuevos - parametros_anteriores||_2 < tolerancia
+    
+    parametros_anteriores <- c(beta_anterior, gamma_anterior)
+    parametros_nuevos <- c(beta, gamma)
+    diferencia <- sqrt(sum((parametros_nuevos - parametros_anteriores)^2))
+    
+    if (diferencia < tolerancia) {
+      convergio <- TRUE
+    }
+  }
+  
+  # Advertencia si no convergió
+  if (!convergio) {
+    warning(sprintf("No convergió en %d iteraciones", max_iteraciones))
+  }
+  
+  # CALCULAR RESULTADOS FINALES
+
+  # Valores predichos y residuales finales
+  valores_ajustados <- as.vector(X %*% beta)
+  residuales_finales <- y - valores_ajustados
+  residuales_estandarizados <- residuales_finales / sqrt(sigma2)
+  
+  # RETORNAR RESULTADOS
+
+  resultado <- list(
+    # parámetros estimados
+    beta = as.vector(beta),
+    gamma = as.vector(gamma),
+    
+    # varianzas estimadas
+    sigma2 = as.vector(sigma2),
+    
+    # errores estándar 
+    se_beta = sqrt(diag(cov_beta)),
+    se_gamma = sqrt(diag(cov_gamma)),
+    
+    # valores ajustados y residuales
+    valores_ajustados = valores_ajustados,
+    residuales = residuales_finales,
+    residuales_estandarizados = residuales_estandarizados
+  )
+  
+  return(resultado)
+}
+```
+
+## Ejemplo
+
+```{r}
+data(mtcars)
+
+y <- mtcars$mpg # millas por galón
+X <- cbind(1, mtcars$wt) # intercepto + peso
+Z <- cbind(1, mtcars$hp) # intercepto + caballos de fuerza
+
+# Fisher Scoring
+resultado <- fisher_scoring(y, X, Z)
+```
+```{r}
+#| layout-ncol: 2
+
+library(knitr)
+
+# Tabla para beta con std error
+beta_df <- data.frame(
+  Parámetro = paste0("Beta_", 0:(length(resultado$beta)-1)),
+  Estimación = resultado$beta,
+  `Error Std` = resultado$se_beta
+)
+
+kable(beta_df, caption = "Estimación del vector Beta con Error Estándar", digits = 4)
+
+# Tabla para gamma con std error
+gamma_df <- data.frame(
+  Parámetro = paste0("Gamma_", 0:(length(resultado$gamma)-1)),
+  Estimación = resultado$gamma,
+  `Error Std` = resultado$se_gamma
+)
+
+kable(gamma_df, caption = "Estimación del vector Gamma con Error Estándar", digits = 4)
+
+```
+
+```{r}
+# Usando la función gls de nlme
+
+library(nlme)
+
+gls_model <- gls(mpg ~ wt, data = mtcars,
+                 weights = varExp(form = ~ hp))
+coef_summary <- summary(gls_model)$tTable
+
+coef(gls_model)
+(std_errors <- coef_summary[, "Std.Error"])
+```
+
+
+
