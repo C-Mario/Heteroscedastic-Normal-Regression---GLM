@@ -6,6 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Carlos Mario Castaño Suaza">
+<meta name="author" content="Juan Pablo Lara Chaves">
+<meta name="author" content="María Paula Camargo Rincón">
 
 <title>Regresión Normal Heteroscedástica</title>
 <style>
@@ -115,6 +118,14 @@ window.Quarto = {
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Authors</div>
+    <div class="quarto-title-meta-contents">
+             <p>Carlos Mario Castaño Suaza </p>
+             <p>Juan Pablo Lara Chaves </p>
+             <p>María Paula Camargo Rincón </p>
+          </div>
+  </div>
     
   
     
@@ -807,6 +818,120 @@ Degrees of freedom: 31 total; 28 residual</code></pre>
 </tr>
 </tbody>
 </table>
+<p>Todas las variables aparecen como significativas, además de esto los resultados son bastante similares con la función de “fisher_scoring”.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>df_cherry_tree_D <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">valores_ajustados=</span>fisher_tree_D<span class="sc">$</span>valores_ajustados,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">residuales=</span>fisher_tree_D<span class="sc">$</span>residuales,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">residuales_estandarizados=</span>fisher_tree_D<span class="sc">$</span>residuales_estandarizados,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">H=</span>datos<span class="sc">$</span>H,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">D=</span>datos<span class="sc">$</span>D)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_cherry_tree_D, <span class="fu">aes</span>(<span class="at">x =</span>valores_ajustados , <span class="at">y =</span> residuales)) <span class="sc">+</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">'black'</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Residual crudo'</span>, <span class="at">x =</span> <span class="st">'Valores ajustados'</span>, <span class="at">y =</span> <span class="st">'Residual '</span>) <span class="sc">+</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="dv">13</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>res_est <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_cherry_tree_D, <span class="fu">aes</span>(<span class="at">x =</span> valores_ajustados, <span class="at">y =</span> residuales_estandarizados)) <span class="sc">+</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">'black'</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Residuales estandarizados'</span>, <span class="at">x =</span> <span class="st">'valores ajustandos'</span>, <span class="at">y =</span> <span class="st">'Residuales estandarizados'</span>) <span class="sc">+</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>res; res_est</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="Modelos_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="Modelos_files/figure-html/unnamed-chunk-19-2.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<p>A comparación con el modelo anterior los esiduales estandarizados vs los valores ajustados se ven más centrados en 0, nuevamente no se ve un patrón no explicado.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>res_H <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_cherry_tree_D, <span class="fu">aes</span>(<span class="at">x =</span> H, <span class="at">y =</span> residuales)) <span class="sc">+</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">'black'</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Residuales vs Altura'</span>, <span class="at">x =</span> <span class="st">'H'</span>, <span class="at">y =</span> <span class="st">'Residuales'</span>) <span class="sc">+</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="dv">13</span>)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>res_Hest <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_cherry_tree_D, <span class="fu">aes</span>(<span class="at">x =</span> H, <span class="at">y =</span> residuales_estandarizados)) <span class="sc">+</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">'black'</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Residuales estandarizados vs Altura'</span>, <span class="at">x =</span> <span class="st">'H'</span>, <span class="at">y =</span> <span class="st">'Residuales estandarizados'</span>) <span class="sc">+</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>res_H; res_Hest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="Modelos_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="Modelos_files/figure-html/unnamed-chunk-21-2.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<p>Nuevamente no se ve un patrón no explicado, y los residuales se ven más centrados en 0 a comparación con el modelo anterior.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>res_D <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_cherry_tree_D, <span class="fu">aes</span>(<span class="at">x =</span> D, <span class="at">y =</span> residuales)) <span class="sc">+</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">'black'</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Residuales vs Diámetro'</span>, <span class="at">x =</span> <span class="st">'D'</span>, <span class="at">y =</span> <span class="st">'Residuales'</span>) <span class="sc">+</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="dv">13</span>)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>res_Dest <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_cherry_tree_D, <span class="fu">aes</span>(<span class="at">x =</span> D, <span class="at">y =</span> residuales_estandarizados)) <span class="sc">+</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">'black'</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Residuales estandarizados vs Diámetro'</span>, <span class="at">x =</span> <span class="st">'D'</span>, <span class="at">y =</span> <span class="st">'Residuales estandarizados'</span>) <span class="sc">+</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>res_D; res_Dest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="Modelos_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="Modelos_files/figure-html/unnamed-chunk-23-2.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<p>Nuevamente los residuales se ven mucho más centrados en 0 a comparación con el modelo anterior, no se ve un patrón no explicado.</p>
+<p>Aunque la función de r no acepte dentro de su formula más de una covariable para estimar la varianza, se tomaron los resultados de los criterios, que se muestran a continuación.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 31%">
+<col style="width: 23%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Modelo</th>
+<th style="text-align: center;">AIC</th>
+<th style="text-align: center;">BIC</th>
+<th style="text-align: center;"><span class="math inline">\(\sum\hat{e}_{i}^{2}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Z=D+H</td>
+<td style="text-align: center;">177.0761</td>
+<td style="text-align: center;">183.7371</td>
+<td style="text-align: center;">657.308</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Z=H</td>
+<td style="text-align: center;">178.7115</td>
+<td style="text-align: center;">185.3726</td>
+<td style="text-align: center;">404.3394</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Z=D</td>
+<td style="text-align: center;">168.7432</td>
+<td style="text-align: center;">175.4042</td>
+<td style="text-align: center;">1302.844</td>
+</tr>
+</tbody>
+</table>
+<p>Se puede ver que el modelo que obtuvo valores más bajos en los criterios de predictividad fue el último modelo realizado donde la única covariable para estimar la varianza es Diámetro (D), como estos criterios penalizan la complejidad quiere decir que este modelo es un buen balance entre simplicidad y capacidad de modelar la varianza, a pesar de que fue el que obtuvo la suma de cuadrados de lso residuales más alta.</p>
 </section>
 
 </main>

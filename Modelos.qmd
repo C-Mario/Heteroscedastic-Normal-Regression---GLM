@@ -603,7 +603,8 @@ res_D; res_Dest
 ```
 Nuevamente los residuales se ven mucho más centrados en 0 a comparación con el modelo anterior, no se ve un patrón no explicado.
 
-Aunque la función de r no acepte dentro de su formula más de una covariable para estimar la varianza, se tomaron los resultados de los criterios, que se muestran a continuación
+Aunque la función de r no acepte dentro de su formula más de una covariable para estimar la varianza, se tomaron los resultados de los criterios, que se muestran a continuación.
+
 |Modelo| AIC     | BIC | $\sum\hat{e}_{i}^{2}$ |
 |:-------------|:----------------------:|:----------------:|:------------------:|
 |Z=D+H|177.0761 | 183.7371 |657.308|
