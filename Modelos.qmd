@@ -404,5 +404,200 @@ coef(gls_model)
 (std_errors <- coef_summary[, "Std.Error"])
 ```
 
+Ahora usaremos los datos de los Cherry Tree, en los que se tiene como variable respuesta el volúmen de madera obtenida de un árbol(V), y como variables predictoras tenemos La altura del árbol (H) y el diámetro del tronco (D).
 
+```{r}
+D <- c(8.3, 8.6, 8.8, 10.2, 10.7, 10.8, 11.0, 11.0, 11.1, 11.2,
+       11.3, 11.4, 11.4, 11.7, 12.0, 12.2, 12.9, 13.3, 13.7, 13.8,
+       14.0, 14.2, 14.5, 16.0, 16.3, 17.3, 17.5, 17.9, 18.0, 18.0,
+       20.6)
 
+H <- c(70, 65, 63, 72, 81, 83, 66, 75, 80, 75,
+       79, 76, 76, 69, 75, 74, 85, 86, 71, 64,
+       78, 80, 74, 72, 77, 81, 82, 80, 80, 74,
+       87)
+
+V <- c(10.3, 10.3, 10.2, 16.4, 18.8, 19.7, 15.6, 18.2, 22.6, 19.9,
+       24.2, 21.0, 21.4, 21.3, 19.1, 22.2, 33.8, 27.4, 25.7, 24.9,
+       34.5, 31.7, 36.3, 38.3, 42.6, 55.4, 55.7, 58.3, 51.5, 51.0,
+       77.0)
+
+datos <- data.frame(D, H, V)
+```
+
+```{r}
+library(GGally)
+datos %>% 
+  ggpairs(
+    upper = list(continuous = wrap("cor", size = 2)),
+    diag = list(continuous = wrap("barDiag", colour = "burlywood")),
+    lower = list(continuous = wrap("points", alpha = 0.5, shape = 20, 
+                                   fill = "lightblue")),
+    axisLabels = "none") + 
+  theme(strip.text = element_text(size = 6))
+```
+Se observa que las varibles predictoras presentan una correlación moderadamente alta entre sí, pero tambien vemos que presentan una correlación moderamente alta entre el volumen y la altura, y una correlación alta entre el volumen y el diámetro, recordando que el volumen es la variable respuesta, este resultado es bueno.
+
+Se realizará el algoritmo con $X=Z$ mientras observamos como se comportan los residuales de este modelo.
+```{r}
+X <- model.matrix(~.,data = datos[,-3])
+fisher_tree <- fisher_scoring(y = V,X = X,Z = X )
+```
+|| $\hat{\beta}$     | Desviación estandar $\beta$ | $\hat{\gamma}$  | Desviación estandar $\gamma$|
+|:-------------|:----------------------:|:----------------:|:------------------:|:--------------------|
+|Intercepto|-31.6758447 | 2.50389857 |-13.33879116|3.13029162|
+|Diámetro (D)|3.0145332 |0.16278569|0.64004059|0.09314556|
+|Altura (H)|0.2423712 |0.04435291|0.09058667|0.04633345|
+Vamos a reviar los residuales:
+```{r}
+df_cherry_tree <- data.frame(
+  valores_ajustados=fisher_tree$valores_ajustados,
+  residuales=fisher_tree$residuales,
+  residuales_estandarizados=fisher_tree$residuales_estandarizados,
+  H=datos$H,
+  D=datos$D)
+```
+```{r}
+res <- ggplot(df_cherry_tree, aes(x =valores_ajustados , y = residuales)) +
+    geom_point(color = 'black', alpha = 0.6) +
+    labs(title = 'Residual crudo', x = 'Valores ajustados', y = 'Residual ') +
+    theme_minimal(13)
+
+res_est <- ggplot(df_cherry_tree, aes(x = valores_ajustados, y = residuales_estandarizados)) +
+    geom_point(color = 'black', alpha = 0.6) +
+    labs(title = 'Residuales estandarizados', x = 'valores ajustandos', y = 'Residuales estandarizados') +
+    theme_minimal(13)
+```
+```{r}
+#| layout-ncol: 2
+#| out-width: 100%
+
+res; res_est
+```
+Aunque en los residuales crudos, podemos ver que hay una relación creciente, como denotando la falta de algun término cuadrático o de algún problema de heteroscedasticidad, los residuales estandarizados son los mejores para interpretar en este caso, ya que esos son más robustos, en estos residuales estandarizados no se refleja un patróno no explicado, y estan casi centrados en 0, lo que indica que el modelo parece estar reflejando bien la variabilidad.
+
+```{r}
+res_H <- ggplot(df_cherry_tree, aes(x = H, y = residuales)) +
+    geom_point(color = 'black', alpha = 0.6) +
+    labs(title = 'Residuales vs Altura', x = 'H', y = 'Residuales') +
+    theme_minimal(13)
+res_Hest <- ggplot(df_cherry_tree, aes(x = H, y = residuales_estandarizados)) +
+    geom_point(color = 'black', alpha = 0.6) +
+    labs(title = 'Residuales estandarizados vs Altura', x = 'H', y = 'Residuales estandarizados') +
+    theme_minimal(13)
+```
+```{r}
+#| layout-ncol: 2
+#| out-width: 100%
+
+res_H; res_Hest
+```
+Nuevamente nos enfocaremos en los residuales estandarizados, se observa que los residuales parecen estar un poco más centrados en 0 y nuevamente no presentarn un patrón no explicado, lo que indica que el modelo está captando bien la variable Altura (H).
+```{r}
+res_D <- ggplot(df_cherry_tree, aes(x = D, y = residuales)) +
+    geom_point(color = 'black', alpha = 0.6) +
+    labs(title = 'Residuales vs Diámetro', x = 'D', y = 'Residuales') +
+    theme_minimal(13)
+res_Dest <- ggplot(df_cherry_tree, aes(x = D, y = residuales_estandarizados)) +
+    geom_point(color = 'black', alpha = 0.6) +
+    labs(title = 'Residuales estandarizados vs Diámetro', x = 'D', y = 'Residuales estandarizados') +
+    theme_minimal(13)
+```
+```{r}
+#| layout-ncol: 2
+#| out-width: 100%
+
+res_D; res_Dest
+```
+Nuevamente se puede ver que los residuales estan todavía más centrados en 0 que con H, y no se ve un patrón no explicado.
+
+Se decidió realizar un modelo en el que las covariables para la regresión de la varianza será unicamente el diámetro, esto debido a su efecto o estimación, a su desviaicón estándar, su alta correlación con la variable respuesta y a los gráficos de los residuales.
+```{r}
+Z <- model.matrix(~D,data = datos)
+fisher_tree_D <- fisher_scoring(y = V,X = X,Z = Z)
+fisher_tree_D$se_gamma
+```
+|| $\hat{\beta}$     | Desviación estandar $\beta$ | $\hat{\gamma}$  | Desviación estandar $\gamma$|
+|:-------------|:----------------------:|:----------------:|:------------------:|:--------------------|
+|Intercepto|-32.1888152 | 2.98286409 |-6.4667733|1.11188675|
+|Diámetro (D)|3.2353858 |0.21520718|0.6469465|0.08190644|
+|Altura (H)|0.2191107 |0.05443738| | |
+```{r}
+library(nlme)
+gls_model_tree <- gls(V~.,data = datos,weights = varExp(form = ~ D))
+summary(gls_model_tree)
+```
+|| $\hat{\beta}$     | Desviación estandar $\beta$ | p_value |
+|:-------------|:----------------------:|:----------------:|:------------------:|
+|Intercepto|-32.80477 | 3.493947 |-0.000|
+|Diámetro (D)|3.34181 |0.236866|0.000|
+|Altura (H)|0.21285 |0.062307| 0.002 |
+Todas las variables aparecen como significativas, además de esto los resultados son bastante similares con la función de "fisher_scoring".
+```{r}
+df_cherry_tree_D <- data.frame(
+  valores_ajustados=fisher_tree_D$valores_ajustados,
+  residuales=fisher_tree_D$residuales,
+  residuales_estandarizados=fisher_tree_D$residuales_estandarizados,
+  H=datos$H,
+  D=datos$D)
+```
+```{r}
+res <- ggplot(df_cherry_tree_D, aes(x =valores_ajustados , y = residuales)) +
+    geom_point(color = 'black', alpha = 0.6) +
+    labs(title = 'Residual crudo', x = 'Valores ajustados', y = 'Residual ') +
+    theme_minimal(13)
+
+res_est <- ggplot(df_cherry_tree_D, aes(x = valores_ajustados, y = residuales_estandarizados)) +
+    geom_point(color = 'black', alpha = 0.6) +
+    labs(title = 'Residuales estandarizados', x = 'valores ajustandos', y = 'Residuales estandarizados') +
+    theme_minimal(13)
+```
+```{r}
+#| layout-ncol: 2
+#| out-width: 100%
+
+res; res_est
+```
+A comparación con el modelo anterior los esiduales estandarizados vs los valores ajustados se ven más centrados en 0, nuevamente no se ve un patrón no explicado.
+```{r}
+res_H <- ggplot(df_cherry_tree_D, aes(x = H, y = residuales)) +
+    geom_point(color = 'black', alpha = 0.6) +
+    labs(title = 'Residuales vs Altura', x = 'H', y = 'Residuales') +
+    theme_minimal(13)
+res_Hest <- ggplot(df_cherry_tree_D, aes(x = H, y = residuales_estandarizados)) +
+    geom_point(color = 'black', alpha = 0.6) +
+    labs(title = 'Residuales estandarizados vs Altura', x = 'H', y = 'Residuales estandarizados') +
+    theme_minimal(13)
+```
+```{r}
+#| layout-ncol: 2
+#| out-width: 100%
+
+res_H; res_Hest
+```
+Nuevamente no se ve un patrón no explicado, y los residuales se ven más centrados en 0 a comparación con el modelo anterior. 
+```{r}
+res_D <- ggplot(df_cherry_tree_D, aes(x = D, y = residuales)) +
+    geom_point(color = 'black', alpha = 0.6) +
+    labs(title = 'Residuales vs Diámetro', x = 'D', y = 'Residuales') +
+    theme_minimal(13)
+res_Dest <- ggplot(df_cherry_tree_D, aes(x = D, y = residuales_estandarizados)) +
+    geom_point(color = 'black', alpha = 0.6) +
+    labs(title = 'Residuales estandarizados vs Diámetro', x = 'D', y = 'Residuales estandarizados') +
+    theme_minimal(13)
+```
+```{r}
+#| layout-ncol: 2
+#| out-width: 100%
+
+res_D; res_Dest
+```
+Nuevamente los residuales se ven mucho más centrados en 0 a comparación con el modelo anterior, no se ve un patrón no explicado.
+
+Aunque la función de r no acepte dentro de su formula más de una covariable para estimar la varianza, se tomaron los resultados de los criterios, que se muestran a continuación
+|Modelo| AIC     | BIC | $\sum\hat{e}_{i}^{2}$ |
+|:-------------|:----------------------:|:----------------:|:------------------:|
+|Z=D+H|177.0761 | 183.7371 |657.308|
+|Z=H |178.7115 |185.3726|404.3394|
+|Z=D |168.7432 |175.4042| 1302.844 |
+Se puede ver que el modelo que obtuvo valores más bajos en los criterios de predictividad fue el último modelo realizado donde la única covariable para estimar la varianza es Diámetro (D), como estos criterios penalizan la complejidad quiere decir que este modelo es un buen balance entre simplicidad y capacidad de modelar la varianza, a pesar de que fue el que obtuvo la suma de cuadrados de lso residuales más alta.
