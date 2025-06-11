@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.6.42">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -63,10 +63,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="Modelos_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="Modelos_files/libs/quarto-html/anchor.min.js"></script>
 <link href="Modelos_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="Modelos_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="Modelos_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="Modelos_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="Modelos_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="Modelos_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="Modelos_files/libs/bootstrap/bootstrap-1bc8a17f135ab3d594c857e9f48e611b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -508,6 +508,305 @@ I^{(k)}_{\boldsymbol{\gamma}} \boldsymbol{\gamma}^{(k+1)} = I^{(k)}_{\boldsymbol
   1.8647283   0.5601475 </code></pre>
 </div>
 </div>
+<p>Ahora usaremos los datos de los Cherry Tree, en los que se tiene como variable respuesta el volúmen de madera obtenida de un árbol(V), y como variables predictoras tenemos La altura del árbol (H) y el diámetro del tronco (D).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">8.3</span>, <span class="fl">8.6</span>, <span class="fl">8.8</span>, <span class="fl">10.2</span>, <span class="fl">10.7</span>, <span class="fl">10.8</span>, <span class="fl">11.0</span>, <span class="fl">11.0</span>, <span class="fl">11.1</span>, <span class="fl">11.2</span>,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>       <span class="fl">11.3</span>, <span class="fl">11.4</span>, <span class="fl">11.4</span>, <span class="fl">11.7</span>, <span class="fl">12.0</span>, <span class="fl">12.2</span>, <span class="fl">12.9</span>, <span class="fl">13.3</span>, <span class="fl">13.7</span>, <span class="fl">13.8</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>       <span class="fl">14.0</span>, <span class="fl">14.2</span>, <span class="fl">14.5</span>, <span class="fl">16.0</span>, <span class="fl">16.3</span>, <span class="fl">17.3</span>, <span class="fl">17.5</span>, <span class="fl">17.9</span>, <span class="fl">18.0</span>, <span class="fl">18.0</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>       <span class="fl">20.6</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>H <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">70</span>, <span class="dv">65</span>, <span class="dv">63</span>, <span class="dv">72</span>, <span class="dv">81</span>, <span class="dv">83</span>, <span class="dv">66</span>, <span class="dv">75</span>, <span class="dv">80</span>, <span class="dv">75</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>       <span class="dv">79</span>, <span class="dv">76</span>, <span class="dv">76</span>, <span class="dv">69</span>, <span class="dv">75</span>, <span class="dv">74</span>, <span class="dv">85</span>, <span class="dv">86</span>, <span class="dv">71</span>, <span class="dv">64</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>       <span class="dv">78</span>, <span class="dv">80</span>, <span class="dv">74</span>, <span class="dv">72</span>, <span class="dv">77</span>, <span class="dv">81</span>, <span class="dv">82</span>, <span class="dv">80</span>, <span class="dv">80</span>, <span class="dv">74</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>       <span class="dv">87</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>V <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">10.3</span>, <span class="fl">10.3</span>, <span class="fl">10.2</span>, <span class="fl">16.4</span>, <span class="fl">18.8</span>, <span class="fl">19.7</span>, <span class="fl">15.6</span>, <span class="fl">18.2</span>, <span class="fl">22.6</span>, <span class="fl">19.9</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>       <span class="fl">24.2</span>, <span class="fl">21.0</span>, <span class="fl">21.4</span>, <span class="fl">21.3</span>, <span class="fl">19.1</span>, <span class="fl">22.2</span>, <span class="fl">33.8</span>, <span class="fl">27.4</span>, <span class="fl">25.7</span>, <span class="fl">24.9</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>       <span class="fl">34.5</span>, <span class="fl">31.7</span>, <span class="fl">36.3</span>, <span class="fl">38.3</span>, <span class="fl">42.6</span>, <span class="fl">55.4</span>, <span class="fl">55.7</span>, <span class="fl">58.3</span>, <span class="fl">51.5</span>, <span class="fl">51.0</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>       <span class="fl">77.0</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(D, H, V)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Cargando paquete requerido: ggplot2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 method overwritten by 'GGally':
+  method from   
+  +.gg   ggplot2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>datos <span class="sc">%&gt;%</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggpairs</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">upper =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="fu">wrap</span>(<span class="st">"cor"</span>, <span class="at">size =</span> <span class="dv">2</span>)),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">diag =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="fu">wrap</span>(<span class="st">"barDiag"</span>, <span class="at">colour =</span> <span class="st">"burlywood"</span>)),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">lower =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="fu">wrap</span>(<span class="st">"points"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">shape =</span> <span class="dv">20</span>, </span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">fill =</span> <span class="st">"lightblue"</span>)),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">axisLabels =</span> <span class="st">"none"</span>) <span class="sc">+</span> </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Modelos_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Se observa que las varibles predictoras presentan una correlación moderadamente alta entre sí, pero tambien vemos que presentan una correlación moderamente alta entre el volumen y la altura, y una correlación alta entre el volumen y el diámetro, recordando que el volumen es la variable respuesta, este resultado es bueno.</p>
+<p>Se realizará el algoritmo con <span class="math inline">\(X=Z\)</span> mientras observamos como se comportan los residuales de este modelo.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>.,<span class="at">data =</span> datos[,<span class="sc">-</span><span class="dv">3</span>])</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>fisher_tree <span class="ot">&lt;-</span> <span class="fu">fisher_scoring</span>(<span class="at">y =</span> V,<span class="at">X =</span> X,<span class="at">Z =</span> X )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 24%">
+<col style="width: 18%">
+<col style="width: 20%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;"><span class="math inline">\(\hat{\beta}\)</span></th>
+<th style="text-align: center;">Desviación estandar <span class="math inline">\(\beta\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\hat{\gamma}\)</span></th>
+<th style="text-align: left;">Desviación estandar <span class="math inline">\(\gamma\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Intercepto</td>
+<td style="text-align: center;">-31.6758447</td>
+<td style="text-align: center;">2.50389857</td>
+<td style="text-align: center;">-13.33879116</td>
+<td style="text-align: left;">3.13029162</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Diámetro (D)</td>
+<td style="text-align: center;">3.0145332</td>
+<td style="text-align: center;">0.16278569</td>
+<td style="text-align: center;">0.64004059</td>
+<td style="text-align: left;">0.09314556</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Altura (H)</td>
+<td style="text-align: center;">0.2423712</td>
+<td style="text-align: center;">0.04435291</td>
+<td style="text-align: center;">0.09058667</td>
+<td style="text-align: left;">0.04633345</td>
+</tr>
+</tbody>
+</table>
+<p>Vamos a reviar los residuales:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df_cherry_tree <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">valores_ajustados=</span>fisher_tree<span class="sc">$</span>valores_ajustados,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">residuales=</span>fisher_tree<span class="sc">$</span>residuales,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">residuales_estandarizados=</span>fisher_tree<span class="sc">$</span>residuales_estandarizados,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">H=</span>datos<span class="sc">$</span>H,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">D=</span>datos<span class="sc">$</span>D)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_cherry_tree, <span class="fu">aes</span>(<span class="at">x =</span>valores_ajustados , <span class="at">y =</span> residuales)) <span class="sc">+</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">'black'</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Residual crudo'</span>, <span class="at">x =</span> <span class="st">'Valores ajustados'</span>, <span class="at">y =</span> <span class="st">'Residual '</span>) <span class="sc">+</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="dv">13</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>res_est <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_cherry_tree, <span class="fu">aes</span>(<span class="at">x =</span> valores_ajustados, <span class="at">y =</span> residuales_estandarizados)) <span class="sc">+</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">'black'</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Residuales estandarizados'</span>, <span class="at">x =</span> <span class="st">'valores ajustandos'</span>, <span class="at">y =</span> <span class="st">'Residuales estandarizados'</span>) <span class="sc">+</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>res; res_est</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="Modelos_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="Modelos_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<p>Aunque en los residuales crudos, podemos ver que hay una relación creciente, como denotando la falta de algun término cuadrático o de algún problema de heteroscedasticidad, los residuales estandarizados son los mejores para interpretar en este caso, ya que esos son más robustos, en estos residuales estandarizados no se refleja un patróno no explicado, y estan casi centrados en 0, lo que indica que el modelo parece estar reflejando bien la variabilidad.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>res_H <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_cherry_tree, <span class="fu">aes</span>(<span class="at">x =</span> H, <span class="at">y =</span> residuales)) <span class="sc">+</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">'black'</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Residuales vs Altura'</span>, <span class="at">x =</span> <span class="st">'H'</span>, <span class="at">y =</span> <span class="st">'Residuales'</span>) <span class="sc">+</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="dv">13</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>res_Hest <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_cherry_tree, <span class="fu">aes</span>(<span class="at">x =</span> H, <span class="at">y =</span> residuales_estandarizados)) <span class="sc">+</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">'black'</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Residuales estandarizados vs Altura'</span>, <span class="at">x =</span> <span class="st">'H'</span>, <span class="at">y =</span> <span class="st">'Residuales estandarizados'</span>) <span class="sc">+</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>res_H; res_Hest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="Modelos_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="Modelos_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<p>Nuevamente nos enfocaremos en los residuales estandarizados, se observa que los residuales parecen estar un poco más centrados en 0 y nuevamente no presentarn un patrón no explicado, lo que indica que el modelo está captando bien la variable Altura (H).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>res_D <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_cherry_tree, <span class="fu">aes</span>(<span class="at">x =</span> D, <span class="at">y =</span> residuales)) <span class="sc">+</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">'black'</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Residuales vs Diámetro'</span>, <span class="at">x =</span> <span class="st">'D'</span>, <span class="at">y =</span> <span class="st">'Residuales'</span>) <span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="dv">13</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>res_Dest <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_cherry_tree, <span class="fu">aes</span>(<span class="at">x =</span> D, <span class="at">y =</span> residuales_estandarizados)) <span class="sc">+</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">'black'</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Residuales estandarizados vs Diámetro'</span>, <span class="at">x =</span> <span class="st">'D'</span>, <span class="at">y =</span> <span class="st">'Residuales estandarizados'</span>) <span class="sc">+</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>res_D; res_Dest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="Modelos_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="Modelos_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<p>Nuevamente se puede ver que los residuales estan todavía más centrados en 0 que con H, y no se ve un patrón no explicado.</p>
+<p>Se decidió realizar un modelo en el que las covariables para la regresión de la varianza será unicamente el diámetro, esto debido a su efecto o estimación, a su desviaicón estándar, su alta correlación con la variable respuesta y a los gráficos de los residuales.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>Z <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>D,<span class="at">data =</span> datos)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>fisher_tree_D <span class="ot">&lt;-</span> <span class="fu">fisher_scoring</span>(<span class="at">y =</span> V,<span class="at">X =</span> X,<span class="at">Z =</span> Z)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>fisher_tree_D<span class="sc">$</span>se_gamma</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)           D 
+ 1.11188675  0.08190644 </code></pre>
+</div>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 24%">
+<col style="width: 18%">
+<col style="width: 20%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;"><span class="math inline">\(\hat{\beta}\)</span></th>
+<th style="text-align: center;">Desviación estandar <span class="math inline">\(\beta\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\hat{\gamma}\)</span></th>
+<th style="text-align: left;">Desviación estandar <span class="math inline">\(\gamma\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Intercepto</td>
+<td style="text-align: center;">-32.1888152</td>
+<td style="text-align: center;">2.98286409</td>
+<td style="text-align: center;">-6.4667733</td>
+<td style="text-align: left;">1.11188675</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Diámetro (D)</td>
+<td style="text-align: center;">3.2353858</td>
+<td style="text-align: center;">0.21520718</td>
+<td style="text-align: center;">0.6469465</td>
+<td style="text-align: left;">0.08190644</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Altura (H)</td>
+<td style="text-align: center;">0.2191107</td>
+<td style="text-align: center;">0.05443738</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>gls_model_tree <span class="ot">&lt;-</span> <span class="fu">gls</span>(V<span class="sc">~</span>.,<span class="at">data =</span> datos,<span class="at">weights =</span> <span class="fu">varExp</span>(<span class="at">form =</span> <span class="sc">~</span> D))</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(gls_model_tree)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized least squares fit by REML
+  Model: V ~ . 
+  Data: datos 
+       AIC      BIC    logLik
+  168.7432 175.4042 -79.37159
+
+Variance function:
+ Structure: Exponential of variance covariate
+ Formula: ~D 
+ Parameter estimates:
+    expon 
+0.2885111 
+
+Coefficients:
+                Value Std.Error   t-value p-value
+(Intercept) -32.80477  3.493947 -9.389028   0.000
+D             3.34181  0.236866 14.108471   0.000
+H             0.21285  0.062307  3.416135   0.002
+
+ Correlation: 
+  (Intr) D     
+D  0.119       
+H -0.843 -0.629
+
+Standardized residuals:
+       Min         Q1        Med         Q3        Max 
+-1.9731417 -0.6263599  0.2237038  0.8395404  1.9764716 
+
+Residual standard error: 0.06613217 
+Degrees of freedom: 31 total; 28 residual</code></pre>
+</div>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 31%">
+<col style="width: 23%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;"><span class="math inline">\(\hat{\beta}\)</span></th>
+<th style="text-align: center;">Desviación estandar <span class="math inline">\(\beta\)</span></th>
+<th style="text-align: center;">p_value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Intercepto</td>
+<td style="text-align: center;">-32.80477</td>
+<td style="text-align: center;">3.493947</td>
+<td style="text-align: center;">-0.000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Diámetro (D)</td>
+<td style="text-align: center;">3.34181</td>
+<td style="text-align: center;">0.236866</td>
+<td style="text-align: center;">0.000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Altura (H)</td>
+<td style="text-align: center;">0.21285</td>
+<td style="text-align: center;">0.062307</td>
+<td style="text-align: center;">0.002</td>
+</tr>
+</tbody>
+</table>
 </section>
 
 </main>
@@ -594,8 +893,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -706,7 +1003,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
