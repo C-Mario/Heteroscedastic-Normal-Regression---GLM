@@ -1,11 +1,11 @@
 ---
 title: "Regresión Normal Heteroscedástica"
-format: html
-#format:
- #  pdf:
-  #   documentclass: article
-   #  fontsize: 10pt
-    # geometry: a4paper, top=1.5cm, bottom=1.5cm, left=1cm, right=1cm
+#format: html
+format:
+   pdf:
+     documentclass: article
+     fontsize: 10pt
+     geometry: a4paper, top=1.5cm, bottom=1.5cm, left=1cm, right=1cm
 author:
   - Carlos Mario Castaño Suaza
   - Juan Pablo Lara Chaves
